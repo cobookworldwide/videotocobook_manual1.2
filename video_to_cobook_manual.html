@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>가편집 매뉴얼 - Video to Cobook</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .page-number {
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        
+        .page {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 100px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+            border-top: 4px solid #667eea;
+            min-height: 85vh;
+            display: none;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        .navigation-container {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .navigation {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .nav-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 50%;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-btn:hover {
+            background: #5a67d8;
+            transform: scale(1.1);
+        }
+        
+        .nav-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* Page 1 Styles */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 60px 20px;
+        }
+        
+        .header h1 {
+            font-size: 3.2em;
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .header .subtitle {
+            font-size: 1.8em;
+            color: #4a5568;
+            margin-bottom: 40px;
+            font-weight: 500;
+            font-style: italic;
+        }
+        
+        .description {
+            background: linear-gradient(45deg, #ffd89b, #19547b);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            font-size: 1.2em;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-top: 40px;
+        }
+        
+        /* Content Pages Styles */
+        .section-title {
+            font-size: 2.5em;
+            color: #2d3748;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: 700;
+        }
+        
+        .important-notice {
+            background: linear-gradient(45deg, #ff6b95, #ff9a56);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+        
+        .steps {
+            list-style: none;
+            counter-reset: step-counter;
+        }
+        
+        .steps li {
+            counter-increment: step-counter;
+            margin: 20px 0;
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+            position: relative;
+            padding-left: 60px;
+        }
+        
+        .steps li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .video-guide, .link-button {
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            margin: 20px 5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            cursor: pointer;
+            border: none;
+            font-size: 14px;
+        }
+        
+        .video-guide:hover, .link-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.2);
+        }
+        
+        .video-guide::before {
+            content: "▶";
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-size: 14px;
+        }
+        
+        .link-button::before {
+            content: "🔗";
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-size: 14px;
+        }
+        
+        .info-box {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .guide-section {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            color: white;
+        }
+        
+        .guide-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .final-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            margin: 0 -40px;
+        }
+        
+        .checklist {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            backdrop-filter: blur(10px);
+        }
+        
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            margin: 15px 0;
+            font-size: 1.1em;
+            text-align: left;
+            line-height: 1.5;
+        }
+        
+        .checklist-item::before {
+            content: "✅";
+            margin-right: 15px;
+            font-size: 1.2em;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        
+        .email-template {
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            border: 1px solid rgba(255,255,255,0.3);
+            text-align: left;
+            line-height: 1.5;
+        }
+        
+        .chapter-example {
+            background: rgba(255,255,255,0.15);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            border: 1px solid rgba(255,255,255,0.3);
+            text-align: left;
+            line-height: 1.4;
+            font-size: 0.9em;
+        }
+        
+        .bold {
+            font-weight: bold;
+        }
+        
+        .emoji-arrow {
+            color: #667eea;
+            font-size: 1.2em;
+            margin: 0 5px;
+        }
+        
+        .highlight-text {
+            background: linear-gradient(45deg, #ffd89b, #19547b);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Page 1 -->
+        <div class="page active" id="page-1">
+            <div class="header">
+                <h1>가편집 매뉴얼</h1>
+                <div class="subtitle">'Video to Cobook'</div>
+                
+                <div class="description">
+                    📹 <strong>강연녹화영상 (줌 녹화영상)으로 코북을 제작하기 위한 매뉴얼</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page 2 -->
+        <div class="page" id="page-2">
+            <h2 class="section-title">VREW</h2>
+            
+            <div class="important-notice">
+                <strong>갖고 계신 강연녹화영상파일에 대해 아래 9단계 작업을 해주시기 바랍니다.</strong><br><br>
+                강연녹화 영상 파일이 복수일 경우 (ex-1교시 녹화파일, 2교시 녹화 파일, 3교시 녹화파일…) <strong>각 녹화파일마다 따로따로 아래 9단계 작업을 해주시어</strong> 가편집 완료된 복수의 녹화파일과 복수의 자막파일(녹화파일과 파일명 같아야 함)을 모두 공용작업 폴더에 올려주시기 바랍니다.
+            </div>
+            
+            <ol class="steps">
+                <li><strong>무음구간 줄이기</strong></li>
+                
+                <li><strong>강연녹화영상 트리밍</strong>: 불필요한 부분 삭제하기</li>
+                
+                <li><strong>자막검수 및 교정</strong>: 탭 버튼을 누른 뒤 들으며 틀린 부분 수정</li>
+                
+                <li><span class="highlight-text">[자막]</span> ➡️ <span class="highlight-text">[번역 자막 추가]</span></li>
+                
+                <li><span class="highlight-text">[파일]</span> ➡️ <span class="highlight-text">[영상으로 내보내기]</span></li>
+                
+                <li><span class="highlight-text">[파일]</span> ➡️ <span class="highlight-text">[다른 형식으로 내보내기]</span> ➡️ <span class="highlight-text">[자막(.srt)]</span></li>
+                
+                <li><strong>VREW에서 편집한 영상(mp4)</strong>: 구글 드라이브 공용작업폴더 가운데<br>
+                <span class="highlight-text">[챕터별 오디오(mp3) & 영상 파일(H264/mp4/비메오 업로드용)]</span> 폴더에 올리기</li>
+                
+                <li><strong>자막파일(srt)</strong>: 구글 드라이브 공용작업폴더 가운데<br>
+                <span class="highlight-text">[챕터별 SRT 자막파일 & 챕터별 PPTM 트랙 파일 (파워포인트 마크로 파일)]</span> 폴더에 올리기</li>
+                
+                <li><strong>강연 시 사용한 PPT 파일</strong>을 공용작업폴더에 올려주세요</li>
+            </ol>
+            
+            <div class="guide-section">
+                <div class="guide-title">📺 VREW 사용 9단계 가편집 가이드 영상</div>
+                <a class="video-guide" href="https://us06web.zoom.us/clips/share/-WCFL_HfT_WC4Gh14ian2g" target="_blank">가이드 영상 보기</a>
+            </div>
+        </div>
+
+        <!-- Page 3 -->
+        <div class="page" id="page-3">
+            <h2 class="section-title">PIXABAY에서 BGM 고르기</h2>
+            <ol class="steps">
+                <li><a class="link-button" href="https://pixabay.com/music/" target="_blank">https://pixabay.com/music/</a> 접속</li>
+                
+                <li><strong>필터를 적용해서 원하는 BGM 찾기</strong></li>
+                
+                <li>다운받아서 구글드라이브의 <strong>'추천 BGM (저작권 문제 없는 BGM 파일만 업로드)' 폴더에 업로드</strong></li>
+            </ol>
+            <div class="info-box">
+                <strong>추천BGM 폴더에 음악파일을 올리지 않으실 경우 코북 제작자가 알아서 BGM 선정함</strong>
+            </div>
+        </div>
+
+        <!-- Page 4 -->
+        <div class="page" id="page-4">
+            <div class="final-section">
+                <h2>🎉 수고하셨습니다.</h2>
+                <p style="font-size: 1.2em; margin-bottom: 20px;"><strong>공용작업폴더(구글 드라이브)에 가편집 결과물인 아래 4가지를 다 올리셨나요?</strong></p>
+                
+                <div class="checklist">
+                    <div class="checklist-item"><strong>VREW에서 트리밍한 강연녹화영상 (영상 속에 자막이 없어야 함) MP4 파일</strong></div>
+                    
+                    <div class="checklist-item"><strong>위 ①의 강연녹화영상의 한국어 자막 SRT 파일 & 번역(영어) 자막 SRT 파일</strong><br>
+                    (srt 파일명은 해당 강연녹화영상의 파일명과 동일하게 해주세요)</div>
+                    
+                    <div class="checklist-item"><strong>강연녹화 당시 사용했던 파워포인트 PPT(PDF) 파일</strong></div>
+                    
+                    <div class="checklist-item"><strong>BGM 추천 음악파일 (생략 가능)</strong></div>
+                </div>
+
+                <p style="font-size: 1.1em; margin-top: 30px;">
+                    그렇다면 <strong>admin@cobook.ai</strong>에 메일을 보내서 <strong>'종합편집 및 코북 업로드'</strong>를 요청해주세요.
+                </p>
+                
+                <div class="email-template">
+                    <strong>📧 메일 제목:</strong> [종편요청] 강사명 _ 클래스제목<br><br>
+                    <strong>📝 메일 본문:</strong> 강연녹화파일을 어떻게 복수의 챕터영상(챕터 1개 = 대략 10~15분 분량)으로 나눌지 의견을 주셔도 좋습니다(의견 없으시면 코북 제작진이 자체 판단으로 챕터를 분리합니다). 이밖에 코북 제작진에게 전달하고 싶은 내용을 적어주세요.
+                </div>
+                
+                <div class="chapter-example">
+                    <strong>&lt;챕터 분리 요청안 - 예시&gt;</strong><br><br>
+                    <strong>1. 첫번째 강연녹화영상 파일명(영문법개론 1교시.mp4)</strong><br>
+                    1) 챕터 01 / 챕터01의 타임코드 (ex- 0분0초~7분 32초) / 챕터01의 챕터명 (ex - 영문법 개론 수업을 시작하기 전 알아둘 것)<br>
+                    2) 챕터 02 / 챕터02의 타임코드 (ex-7분 33초~15분 01초) / 챕터01의 챕터명 (ex - To부정사에 대한 기초 이론)<br><br>
+                    
+                    <strong>2. 두번째 강연녹화영상 파일명(영문법개론 2교시.mp4)</strong><br>
+                    1) 챕터 03 / 챕터03의 타임코드 (ex- 0분0초~10분 33초) / 챕터03의 챕터명 (ex - To 부정사 연습문제 풀이)<br>
+                    2) 챕터 04 / 챕터04의 타임코드 (ex-10분 34초~20분 21초) / 챕터04의 챕터명 (ex -동명사와 현재분사 차이가 뭘까?)
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Container -->
+        <div class="navigation-container">
+            <div class="navigation">
+                <button class="nav-btn" id="prevBtn" onclick="changePage(-1)">‹</button>
+                <div class="page-number" id="pageNumber">1 / 4</div>
+                <button class="nav-btn" id="nextBtn" onclick="changePage(1)">›</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        const totalPages = 4;
+
+        function changePage(direction) {
+            const current = document.getElementById(`page-${currentPage}`);
+            current.classList.remove('active');
+
+            currentPage += direction;
+
+            if (currentPage < 1) currentPage = 1;
+            if (currentPage > totalPages) currentPage = totalPages;
+
+            const next = document.getElementById(`page-${currentPage}`);
+            next.classList.add('active');
+
+            updateNavigation();
+            updatePageNumber();
+        }
+
+        function updateNavigation() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+
+            prevBtn.disabled = currentPage === 1;
+            nextBtn.disabled = currentPage === totalPages;
+        }
+
+        function updatePageNumber() {
+            const pageNumber = document.getElementById('pageNumber');
+            pageNumber.textContent = `${currentPage} / ${totalPages}`;
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowRight' && currentPage < totalPages) {
+                changePage(1);
+            } else if (event.key === 'ArrowLeft' && currentPage > 1) {
+                changePage(-1);
+            }
+        });
+
+        // Initialize
+        updateNavigation();
+        updatePageNumber();
+    </script>
+</body>
+</html>
